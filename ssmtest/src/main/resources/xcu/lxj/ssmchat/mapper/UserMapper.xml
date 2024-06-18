@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="xcu.lxj.ssmchat.mapper.UserMapper">
+
+
+
+    <select id="selectOne" resultType="user">
+
+        select
+            uid , username , password , token , avatar , build_time
+        from
+            user
+        where uid = #{uid}
+
+    </select>
+
+    <select id="selectOneByToken" resultType="user">
+
+        select
+            uid , username , password , token , avatar , build_time
+        from
+            user
+        where token = #{token}
+    </select>
+
+    <update id="update">
+
+        update
+            user
+        <set>
+            <if test="username != null and username != ''">username = #{username},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+        </set>
+        where
+            uid = #{uid}
+    </update>
+
+    <select id="selectOneByUsernameAndPassword" resultType="user">
+        select
+            uid , username , password , token , avatar , build_time
+        from
+            user
+        where
+            username = #{username}
+          and
+            password = #{password}
+    </select>
+
+    <insert id="insertOne"  useGeneratedKeys="true" keyProperty="uid"  >
+
+        insert into
+            user
+            ( uid,username, password,avatar)
+        values
+            (null,#{username},#{password},#{avatar})
+
+    </insert>
+
+    <select id="selectByUsername" resultType="user">
+
+        select
+            uid , username , password , token , avatar , build_time
+        from
+            user
+        where
+            username = #{username}
+
+
+    </select>
+    
+    
+    <select id="selectByUsernameLike" resultType="user">
+
+        select
+            uid , username , password , token , avatar , build_time
+        from
+            user
+        where
+            username like '%${username}%'
+
+    </select>
+    
+    
+    <update id="createUserFriendTable" >
+        CREATE TABLE IF NOT EXISTS user_${uid}_friends (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            appellation VARCHAR(255),
+            fid int not null,
+            add_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (fid) REFERENCES user(uid)
+        );
+
+
+    </update>
+
+    <update id="createUserGroupTable">
+        CREATE TABLE IF NOT EXISTS  user_${uid}_groups (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            appellation VARCHAR(255),
+            gid int not null,
+            add_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (gid) REFERENCES groups_info(gid)
+        );
+    </update>
+
+    <update id="createUserReceiverMessageTable">
+        CREATE TABLE IF NOT EXISTS user_${uid}_friends_message (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            content VARCHAR(255),
+            uid int,
+            send_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (uid) REFERENCES user(uid)
+        );
+    </update>
+
+    <update id="createUserContactTable">
+        CREATE TABLE user_${uid}_contact (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            fid INT null,
+            gid INT null,
+            type VARCHAR(255),
+            contact_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (fid) REFERENCES user(uid),
+            FOREIGN KEY (gid) REFERENCES groups_info(gid)
+
+        );
+    </update>
+    
+    <update id="createUserNotificationTable">
+        CREATE TABLE user_${uid}_notification (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            type VARCHAR(255) NOT NULL,
+            uid int null,
+            gid int null,
+            content VARCHAR(255) NOT NULL,
+            agree TINYINT DEFAULT 0,
+            is_finish TINYINT DEFAULT 0,
+            not_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (uid) REFERENCES user(uid),
+            FOREIGN KEY (gid) REFERENCES groups_info(gid)
+        );
+    </update>
+
+
+</mapper>

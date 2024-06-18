@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xcu.lxj.ssmchat.mapper.UserFriendMapper">
+
+    <resultMap id="userFriendMap" type="userFriend">
+        <id property="id" column="id" />
+        <result property="fid" column="fid" />
+        <result property="appellation" column="appellation" />
+        <result property="addTime" column="add_time"/>
+        <association property="user" column="fid" javaType="user" select="xcu.lxj.ssmchat.mapper.UserMapper.selectOne" />
+    </resultMap>
+
+
+    <select id="selectFriends" resultMap="userFriendMap">
+
+        select
+            id,fid,appellation,add_time
+        from
+            user_${uid}_friends
+    </select>
+
+    <select id="selectOne" resultMap="userFriendMap">
+
+        select
+            id,fid,appellation,add_time
+        from
+            user_${uid}_friends
+        where
+            fid = #{fid}
+    </select>
+
+    <insert id="insertOne">
+
+        insert into
+            user_${uid}_friends(appellation,fid)
+        values
+            (#{friend.appellation},#{friend.fid});
+
+    </insert>
+
+
+    <insert id="insertOneByFid">
+        insert into
+            user_${uid}_friends(fid)
+        values
+            (#{fid});
+    </insert>
+
+    <update id="updateOne">
+
+        update
+            user_${uid}_friends
+        <set>
+
+            <if test="friend.appellation != null and friend.appellation != '' "> appellation =#{friend.appellation} , </if>
+            <if test="friend.fid !=null and friend.fid != ''  ">fid = #{friend.fid}</if>
+
+        </set>
+        where
+            fid = #{friend.fid}
+
+    </update>
+    
+    <update id="deleteOneById">
+
+        delete from
+            user_${uid}_friends
+        where
+            id = #{fid}
+    </update>
+
+</mapper>

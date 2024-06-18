@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xcu.lxj.ssmchat.mapper.UserMessageMapper">
+
+<!--    void insertOne(@Param("uid") String uid,@Param("message") Message message);-->
+
+    <resultMap id="messageMap" type="message">
+
+        <id property="id" column="id"/>
+
+        <result property="content" column="content"/>
+
+        <result property="uid" column="uid"/>
+
+        <result property="sendTime" column="send_time"/>
+
+        <association property="user" column="uid" javaType="user"
+            select="xcu.lxj.ssmchat.mapper.UserMapper.selectOne"
+        />
+    </resultMap>
+
+
+
+    <insert id="insertOne" useGeneratedKeys="true" keyProperty="message.id">
+        insert into
+            user_${uid}_friends_message(id,content,uid)
+        values
+            (null,#{message.content},#{message.uid});
+    </insert>
+
+<!--    List<Message> selectOne(@Param("uid") String uid,@Param("fid") String fid);-->
+    <select id="selectOne" resultMap="messageMap">
+
+        select
+            id,content,uid,send_time
+        from
+            user_${uid}_friends_message
+        where
+            uid = #{fid}
+
+    </select>
+<!--    void deleteByFid(@Param("uid") String uid,@Param("fid") String fid);-->
+    <delete id="deleteByFid">
+
+        delete from  user_${uid}_friends_message where uid = #{fid}
+
+    </delete>
+<!--    void updateOne(@Param("uid") String uid,@Param("message") Message message);-->
+    <update id="updateOne">
+        update
+            user_${uid}_friends_message
+        <set>
+            <if test="message.content != null">content = #{message.content},</if>
+        </set>
+        where
+            id = #{message.id}
+
+    </update>
+</mapper>

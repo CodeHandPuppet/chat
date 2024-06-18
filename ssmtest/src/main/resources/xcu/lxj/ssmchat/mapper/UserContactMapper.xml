@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xcu.lxj.ssmchat.mapper.UserContactMapper">
+    
+    
+    <resultMap id="userContactMap" type="userContact">
+        <id property="id" column="id"/>
+        <result property="fid" column="fid"/>
+        <result property="gid" column="gid"/>
+        <result property="contactTime" column="contact_time"/>
+        <association property="friend" column="{uid=uid,fid=fid}" javaType="userFriend"
+                     select="xcu.lxj.ssmchat.mapper.UserFriendMapper.selectOne"/>
+        <association property="group" column="{uid=uid,gid=gid}" javaType="userGroup"
+                     select="xcu.lxj.ssmchat.mapper.UserGroupMapper.selectOne" />
+    </resultMap>
+    
+    <select id="selectContact" resultMap="userContactMap">
+
+        select
+            id,fid,gid,type,#{uid} as uid,contact_time
+        from
+            user_${uid}_contact
+
+    </select>
+
+    <select id="selectOneByFid" resultMap="userContactMap">
+
+        select
+            id,fid,gid,type,#{uid} as uid,contact_time
+        from
+            user_${uid}_contact
+        where
+            fid = #{fid}
+    </select>
+
+    <select id="selectOneByGid" resultMap="userContactMap">
+
+        select
+            id,fid,gid,type,#{uid} as uid,contact_time
+        from
+            user_${uid}_contact
+        where
+            gid = #{gid}
+    </select>
+
+
+<!--    void insertOne(@Param("uid") String uid,@Param("userContact") UserContact userContact);-->
+    <insert id="insertOne" useGeneratedKeys="true" keyProperty="userContact.id">
+
+        insert into
+            user_${uid}_contact(id,fid,gid,type)
+        values
+            (null,#{userContact.fid} , #{userContact.gid} , #{userContact.type});
+
+    </insert>
+<!--    void deleteById(@Param("uid") String uid,@Param("id") String id);-->
+
+    <delete id="deleteById">
+
+        delete from
+            user_${uid}_contact
+        where
+            id = #{id}
+
+    </delete>
+
+<!--    void updateOne(@Param("uid") String uid,@Param("userContact")UserContact userContact);-->
+
+    <update id="updateOne">
+        update
+            user_${uid}_contact
+        <set>
+            <if test="userContact.fid != null and userContact.fid != '' "> fid = #{userContact.fid},</if>
+            <if test="userContact.gid != null and userContact.gid != '' "> gid = #{userContact.gid},</if>
+            <if test="userContact.type != null and userContact.type != '' ">type = #{userContact.type}</if>
+        </set>
+        where
+            id = #{userContact.id}
+    </update>
+
+    <update id="updateByFid">
+        update
+        user_${uid}_contact
+        <set>
+            <if test="userContact.fid != null and userContact.fid != '' "> fid = #{userContact.fid},</if>
+            <if test="userContact.gid != null and userContact.gid != '' "> gid = #{userContact.gid},</if>
+            <if test="userContact.type != null and userContact.type != '' ">type = #{userContact.type}</if>
+        </set>
+        where
+        id = #{userContact.fid}
+    </update>
+
+</mapper>

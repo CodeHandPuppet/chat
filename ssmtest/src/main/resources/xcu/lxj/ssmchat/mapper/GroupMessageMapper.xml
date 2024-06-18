@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xcu.lxj.ssmchat.mapper.GroupMessageMapper">
+
+
+    <resultMap id="messageMap" type="message">
+
+        <id property="id" column="id"/>
+
+        <result property="content" column="content"/>
+
+        <result property="uid" column="uid"/>
+
+        <result property="sendTime" column="send_time"/>
+
+        <association property="user" column="uid" javaType="user"
+                     select="xcu.lxj.ssmchat.mapper.UserMapper.selectOne"
+        />
+    </resultMap>
+
+
+<!--    void insertOne(@Param("gid") String gid,@Param("message") String message);-->
+    <insert id="insertOne">
+
+        insert into
+            group_${gid}_message(content,uid)
+        values
+            (#{message.content},#{message.uid});
+    </insert>
+<!--    List<Message> selectAll(@Param("gid") String gid);-->
+    <select id="selectAll" resultMap="messageMap">
+
+        select
+            id,content,uid,send_time
+        from
+            group_${gid}_message
+
+
+    </select>
+<!--    void deleteByUid(@Param("gid") String gid,@Param("uid") String uid);-->
+        <delete id="deleteByUid">
+            delete from  group_${gid}_message where uid = #{uid}
+
+        </delete>
+</mapper>

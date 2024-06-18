@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xcu.lxj.ssmchat.mapper.UserGroupMapper">
+
+
+    <resultMap id="userGroupMap" type="userGroup">
+        <id property="id" column="id" />
+        <result property="gid" column="gid" />
+        <result property="appellation" column="appellation" />
+        <result property="addTime" column="add_time"/>
+        <association property="group" column="gid" javaType="groupsInfo" select="xcu.lxj.ssmchat.mapper.GroupMapper.selectOne" />
+    </resultMap>
+
+    <select id="selectGroups" resultMap="userGroupMap">
+
+        select
+            id,gid,appellation,add_time
+        from
+            user_${uid}_groups
+    </select>
+
+    <select id="selectOne" resultMap="userGroupMap">
+
+        select
+            id,gid,appellation,add_time
+        from
+            user_${uid}_groups
+        where
+            gid =#{gid}
+    </select>
+
+
+
+<!--    int insertOne(@Param("uid") String uid, UserGroup userGroup);-->
+
+    <insert id="insertOne">
+
+        insert into
+            user_${uid}_groups(gid,appellation)
+        values
+            (#{userGroup.gid},#{userGroup.appellation})
+
+    </insert>
+
+
+<!--    int deleteOneByGid(@Param("uid") String uid, @Param("gid") String gid);-->
+    <delete id="deleteOneByGid">
+
+        delete from
+            user_${uid}_groups
+        where
+            gid =#{gid}
+
+    </delete>
+
+
+    <update id="updateOneByGid">
+
+        update
+            user_${uid}_groups
+        set
+            appellation = #{userGroup.appellation}
+        where
+            gid = #{userGroup.gid}
+
+    </update>
+</mapper>

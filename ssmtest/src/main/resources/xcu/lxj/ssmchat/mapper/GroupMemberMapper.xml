@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xcu.lxj.ssmchat.mapper.GroupMemberMapper">
+
+
+    <resultMap id="groupMemberMap" type="groupMember">
+        <id property="id" column="id"/>
+        <result property="type" column="type"/>
+        <result property="uid" column="uid"/>
+        <result property="joinTime" column="join_time"/>
+        <association property="user" javaType="user" column="uid" select="xcu.lxj.ssmchat.mapper.UserMapper.selectOne"/>
+    </resultMap>
+
+<!--    List<GroupMember> selectAll(String gid);-->
+    <select id="selectAll" resultMap="groupMemberMap">
+        select
+            id , type , uid , join_time
+        from
+            group_${gid}_member
+    </select>
+
+<!--    int insertOne(@Param("gid") String gid,@Param("member") GroupMember groupMember);-->
+
+    <insert id="insertOne">
+
+        insert into
+            group_${gid}_member(type,uid)
+        values
+            (member.type,member.uid);
+    </insert>
+<!--    int insertMany(@Param("gid")String gid,@Param("members") List<GroupMember> groupMember);-->
+    <insert id="insertMany">
+
+        insert into
+            group_${gid}_member(type,uid)
+        values
+        <foreach collection="members" item="member" separator=",">
+            (#{member.type},#{member.uid})
+        </foreach>
+
+    </insert>
+<!--    int updateOneByUid(@Param("gid") String gid,@Param("member")GroupMember groupMember);-->
+    <update id="updateOneByUid">
+
+        update
+            group_${gid}_member
+        <set>
+            <if test="member.type != null and member.type!='' "> member = #{member.type},</if>
+        </set>
+        where
+            uid = #{member.uid}
+    </update>
+<!--    int deleteOneByUid(@Param("gid") String gid,@Param("uid") String uid);-->
+    <delete id="deleteOneByUid">
+
+        delete from
+            group_${gid}_member
+        where
+            uid = #{uid}
+
+    </delete>
+<!--    int deleteOneById(@Param("gid") String gid,@Param("id") String id);-->
+    <delete id="deleteOneById">
+
+        delete from
+            group_${gid}_member
+        where
+            id = #{id}
+    </delete>
+</mapper>

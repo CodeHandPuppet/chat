@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xcu.lxj.ssmchat.mapper.UserNotificationMapper">
+
+    <resultMap id="userNotificationMap" type="userNotification">
+        <id property="id" column="id" />
+        <result property="type" column="type" />
+        <result property="gid" column="gid" />
+        <result property="uid" column="uid" />
+        <result property="content" column="content" />
+        <result property="agree" column="agree" />
+        <result property="isFinish" column="is_finish" />
+        <result property="notTime" column="not_time"/>
+        <association property="user" column="uid" javaType="user"
+                     select="xcu.lxj.ssmchat.mapper.UserMapper.selectOne"/>
+        <association property="group" column="gid" javaType="groupsInfo"
+                     select="xcu.lxj.ssmchat.mapper.GroupMapper.selectOne" />
+    </resultMap>
+
+    <select id="selectAll" resultMap="userNotificationMap">
+
+        select
+            id,type,uid,gid,content,agree,is_finish,not_time
+        from
+            user_${uid}_notification
+
+    </select>
+
+    <select id="selectByType" resultMap="userNotificationMap">
+
+        select
+            id,type,uid,gid,content,agree,is_finish,not_time
+        from
+            user_${uid}_notification
+        where
+            type = #{type}
+    </select>
+
+
+    <insert id="insertOne" >
+        insert into
+            user_${receiverId}_notification (id,type,uid,gid,content)
+        values
+            (null,#{notification.type},#{notification.uid},#{notification.gid},#{notification.content});
+    </insert>
+
+
+    <update id="update">
+
+        update
+            user_${uid}_notification
+        <set>
+            <if  test="userNotification.type  != null and userNotification.type != '' ">type = #{userNotification.type},</if>
+            <if  test="userNotification.uid != null and userNotification.uid !='' ">uid = #{userNotification.uid},</if>
+            <if  test="userNotification.gid != null and userNotification.gid !='' ">gid = #{userNotification.gid},</if>
+            <if  test="userNotification.content != null and userNotification.content !='' ">content = #{userNotification.content},</if>
+            <if  test="userNotification.agree != null  ">agree = #{userNotification.agree},</if>
+            <if  test="userNotification.isFinish != null ">is_finish = #{userNotification.isFinish},</if>
+        </set>
+        where
+            id = #{userNotification.id}
+    </update>
+    
+    <delete id="deleteById">
+        delete from
+                   user_${uid}_notification
+        where
+            id = #{id}
+    </delete>
+
+    <delete id="deleteByUid">
+        delete from
+            user_${uid}_notification
+        where
+            id = #{delUid} and type = 'user'
+    </delete>
+</mapper>

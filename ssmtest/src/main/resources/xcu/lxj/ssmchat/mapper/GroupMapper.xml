@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xcu.lxj.ssmchat.mapper.GroupMapper">
+
+
+
+    <resultMap id="groupInfoMap" type="groupsInfo">
+        <id column="gid" property="gid"></id>
+        <result property="ownerUid" column="owner_uid"/>
+        <result property="groupName" column="group_name"/>
+        <result property="groupIntro" column="group_intro"/>
+        <result property="avatar" column="avatar"/>
+        <association property="user" column="owner_uid" javaType="user" select="xcu.lxj.ssmchat.mapper.UserMapper.selectOne"/>
+        <collection property="groupMembers" column="gid" ofType="GroupMember" select="xcu.lxj.ssmchat.mapper.GroupMemberMapper.selectAll"/>
+    </resultMap>
+
+    <insert id="insertOne" useGeneratedKeys="true" keyProperty="gid">
+
+        insert into
+            groups_info(gid,owner_uid,group_name,group_intro,avatar)
+        values
+            (null,#{ownerUid},#{groupName},#{groupIntro},#{avatar})
+    </insert>
+
+    <select id="selectOne" resultMap="groupInfoMap">
+        select
+            gid,owner_uid,group_name,group_intro,avatar,build_time
+        from
+            groups_info
+        where
+            gid = #{gid}
+    </select>
+
+    <update id="createGroupMember">
+        CREATE TABLE group_${gid}_member (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            type VARCHAR(255) not null,
+            uid INT,
+            join_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (uid) REFERENCES user(uid)
+        );
+
+    </update>
+
+    <update id="createGroupMessage">
+        CREATE TABLE  group_${gid}_message (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            uid INT,
+            content VARCHAR(255),
+            send_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (uid) REFERENCES user(uid)
+        );
+    </update>
+
+
+</mapper>
